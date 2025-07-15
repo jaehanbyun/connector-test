@@ -2,9 +2,11 @@
 
 A test suite for OpenTelemetry Collector's **example connector** that demonstrates traces-to-metrics conversion functionality.
 
+> **This project is designed to test the example connector from the [OpenTelemetry Collector Building Connector Tutorial](https://opentelemetry.io/docs/collector/building/connector/).** Follow the tutorial first to build the connector, then use this test to validate its functionality.
+
 ## Overview
 
-This repository contains test code to validate the behavior of an OpenTelemetry Collector custom connector. The connector is designed to:
+This repository contains test code to validate the behavior of an OpenTelemetry Collector custom connector built following the official tutorial. The connector is designed to:
 
 - **Consume traces** from OTLP receiver
 - **Filter spans** based on specific attributes
@@ -49,9 +51,19 @@ go mod tidy
 
 ## Usage
 
-### Step 1: Start OpenTelemetry Collector
+### Step 1: Complete the OpenTelemetry Tutorial
 
-First, you need to have an OpenTelemetry Collector running with the example connector configured. The collector should be configured with:
+This test is specifically designed for the example connector from [OpenTelemetry's Building a Connector Tutorial](https://opentelemetry.io/docs/collector/building/connector/).
+
+**Before running this test:**
+
+1. Follow the complete [Building a Connector tutorial](https://opentelemetry.io/docs/collector/building/connector/)
+2. Build the custom collector binary with the example connector included
+3. Ensure your connector accepts the `request.n` attribute as configured in the tutorial
+
+### Step 2: Start OpenTelemetry Collector
+
+You need to have an OpenTelemetry Collector running with the example connector configured. The collector should be configured with:
 
 - **OTLP Receiver** (listening on port 4318 for HTTP)
 - **Example Connector** (with `attribute_name: "request.n"`)
@@ -83,7 +95,7 @@ service:
       exporters: [debug]
 ```
 
-### Step 2: Run the Test
+### Step 3: Run the Test
 
 Execute the test script to send trace data to the collector:
 
@@ -154,47 +166,12 @@ Example collector log output:
 - **Connection errors**: Verify collector is listening on `localhost:4318`
 - **Import errors**: Run `go mod tidy` to resolve dependencies
 
-## Architecture
-
-```
-[Test Script] → [OTLP Receiver] → [Example Connector] → [Debug Exporter]
-     |                                    |                     |
-  Generates                          Filters by              Outputs
-  trace data                      "request.n" attr           metrics
-```
-
-## Customization
-
-### Change Target Attribute
-
-To test with a different attribute, modify the collector configuration:
-
-```yaml
-connectors:
-  example:
-    attribute_name: "your.custom.attribute" # Change this
-```
-
-Then update the test script to include your custom attribute in the span.
-
-### Add More Test Cases
-
-You can extend `test_connector.go` to include additional test scenarios:
-
-```go
-// Add more spans with different attributes
-span3.SetAttributes(
-    attribute.String("your.custom.attribute", "test-value"),
-    // ... other attributes
-)
-```
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Related Resources
 
+- **[Building a Connector Tutorial](https://opentelemetry.io/docs/collector/building/connector/)** - The official tutorial this test is based on
 - [OpenTelemetry Collector Documentation](https://opentelemetry.io/docs/collector/)
-- [Building Custom Connectors](https://opentelemetry.io/docs/collector/building/connector/)
 - [OpenTelemetry Go SDK](https://opentelemetry.io/docs/languages/go/)
